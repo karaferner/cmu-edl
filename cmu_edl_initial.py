@@ -42,22 +42,22 @@ def average_data_on_Ns(df=pd.DataFrame, num_rows=10):
     return df_avg
 
 
-def get_pol_curve_data(high_current_data, low_current_data=None, convert_to_Amps=True):
+def get_pol_curve_data(filename_high_current_data, filename_low_current_data=None, convert_to_Amps=True):
     """
     Gets full polarization curve data, for time, voltage, and current. 
 
     Parameters:
-        high_current_data (pd.DataFrame): A DataFrame containing the data for the high current regime.
-        low_current_data (pd.DataFrame): A DataFrame containing the data for the low current regime.
+        filename_high_current_data (string): A string containing the path to file for the high current data.
+        filename_low_current_data (string): A string containing the path to file for the low current data.
         convert_to_Amps (Boolean): True if current should be converted from mA to A. Default value is True.
 
     Returns:
         pol_curve_data: A DataFrame containing the polarization curve data for time, voltage, and current. 
     """
-    high_current_data = average_data_on_Ns(high_current_data)
+    high_current_data = average_data_on_Ns(get_data(filename_high_current_data))
    
-    if low_current_data is not None:
-        low_current_data = average_data_on_Ns(low_current_data)
+    if filename_low_current_data is not None:
+        low_current_data = average_data_on_Ns(get_data(filename_low_current_data))
         frames = [low_current_data, high_current_data]
         pol_curve_data = pd.concat(frames, ignore_index=True)
     else:
@@ -70,7 +70,7 @@ def get_pol_curve_data(high_current_data, low_current_data=None, convert_to_Amps
 
     return pol_curve_data
 
-def plot_geom_area_norm_pol_curve(pol_curve_data, active_area=5):
+def normalize_current_to_geom_area(pol_curve_data, active_area=5):
     """
     Plots polarization curve for geometric area normlized current density.
 
@@ -82,18 +82,57 @@ def plot_geom_area_norm_pol_curve(pol_curve_data, active_area=5):
         pol_curve_data: A DataFrame containing the polarization curve data for time, voltage, and current. 
     """
 
-    pol_curve_data["I/A cm-2"] = pol_curve_data["I/A"]/active_area
+    pol_curve_data["I/A cm^-2"] = pol_curve_data["I/A"]/active_area
+    return pol_curve_data
 
-    chart = alt.Chart(pol_curve_data).mark_point().encode(
-        alt.X('I/A cm-2',scale=alt.Scale(domain=[0,3])),
-        alt.Y('<Ewe>/V',scale=alt.Scale(domain=[1.38,2.1]))
-    )
+def normalize_current_to_Ir_loading(pol_curve_data, Ir_loading=float):
+    pol_curve_data["I/A mg_Ir^-1"] = pol_curve_data["I/A cm^-2"]/Ir_loading
+    return pol_curve_data
 
-    chart.save('chart.HTML')
+def normalize_current_to_catalyst_cost(pol_curve_data, Ir_loading=float, Pt_loading=float,Ir_price=5000, Pt_price=1000):
+    Ir_price = Ir_price/  28349.523125 #$/oz / mg/oz = $/mg
+    Pt_price = Pt_price / 28349.523125 #$/oz / mg/oz = $/mg
+
+    Ir_part = Ir_loading*Ir_price
+    Pt_part = Pt_loading*Pt_price
+    total_cost = Ir_part+Pt_part #total $/cm^2
+    pol_curve_data["I/A $PGM^-1"] = pol_curve_data["I/A cm^-2"]/total_cost
+    return pol_curve_data
+
+def plot_pol_curves(pol_curve_data, geom_area=True, Ir_loading=False, cost=False):
+    if geom_area:
+        pol_curve_data = normalize_current_to_geom_area(pol_curve_data)
+
+        geom_area_norm_pol_curve = alt.Chart(pol_curve_data).mark_circle().encode(
+        alt.X('I/A cm^-2', axis=alt.Axis(title='Current density [A cm-2]')),
+        alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+        )
+
+    if Ir_loading:
+        pol_curve_data = normalize_current_to_Ir_loading(pol_curve_data, Ir_loading=0.1)
+
+        Ir_loading_norm_pol_curve = alt.Chart(pol_curve_data).mark_circle().encode(
+        alt.X('I/A mg_Ir^-1', axis=alt.Axis(title='Current density [A mg_Ir^-1]')),
+        alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+        )
+
+    if cost:
+        pol_curve_data = normalize_current_to_catalyst_cost(pol_curve_data)
+
+        catalyst_cost_norm_pol_curve = alt.Chart(pol_curve_data).mark_circle().encode(
+        alt.X('I/A $PGM^-1', axis=alt.Axis(title='Current density [A $PGM^-1]')),
+        alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+        )
+
+    composite_chart = geom_area_norm_pol_curve | Ir_loading_norm_pol_curve
+  
+    composite_chart.save('chart.html')
+
 
 if __name__ == "__main__":
     print('hello world')
-    df_high_current = get_data("test_data/test_data_highIVcurve.txt")
-    df_low_current = get_data("test_data/test_data_lowIVcurve.txt")
-    pol_curve_data_test = get_pol_curve_data(df_high_current, low_current_data=df_low_current)
-    plot_geom_area_norm_pol_curve(pol_curve_data_test)
+    file_high_current = "test_data/test_data_highIVcurve.txt"
+    file_low_current = "test_data/test_data_lowIVcurve.txt"
+    pol_curve_data_test = get_pol_curve_data(file_high_current, file_low_current)
+    print(pol_curve_data_test)
+    plot_pol_curves(pol_curve_data_test, Ir_loading=True)
