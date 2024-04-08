@@ -2,13 +2,15 @@ import numpy as np
 import csv
 import io
 import pandas as pd
+# import os
 
 
 def get_data(filename):
     return pd.read_csv(filename, sep="\s+")
 
-
-def get_pol_curve(data):
+def get_pol_curve(data, low_current_data=None):
+    if low_current_data:
+        data = pd.concat([data,low_current_data],ignore_index=True)
     grouped = data.groupby("Ns")
     results = pd.DataFrame(columns=["voltage_avg", "current_avg"])
     
@@ -20,17 +22,5 @@ def get_pol_curve(data):
         current_avg = last_ten["I/mA"].mean()/(5*1000)
         new_row = pd.DataFrame([{"voltage_avg": voltage_avg, "current_avg": current_avg}])
 
-        results = pd.concat([results,new_row],ignore_index=True )
+        results = pd.concat([results,new_row],ignore_index=True)
     return results
-
-
-
-
-
-
-
-
-
-
-
-    
