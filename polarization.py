@@ -88,15 +88,19 @@ class Polarization:
         Returns:
             pol_curve_data: A DataFrame containing the polarization curve data for time, voltage, and current. 
         """
+        self.geom_area_norm = True
 
         self.pol_curve_data["I/A cm^-2"] = self.pol_curve_data["I/A"]/self.experiment.active_area
         return self.pol_curve_data
 
     def normalize_current_to_Ir_loading(self):
+        self.Ir_loading_norm = True
+
         self.pol_curve_data["I/A mg_Ir^-1"] = self.pol_curve_data["I/A cm^-2"]/self.experiment.Ir_loading
         return self.pol_curve_data
 
     def normalize_current_to_catalyst_cost(self, Ir_price=5000, Pt_price=1000):
+        self.catalyst_cost_norm = True
         Ir_price = Ir_price/  28349.523125 #$/oz / mg/oz = $/mg
         Pt_price = Pt_price / 28349.523125 #$/oz / mg/oz = $/mg
 
@@ -106,33 +110,36 @@ class Polarization:
         self.pol_curve_data["I/A $PGM^-1"] = self.pol_curve_data["I/A cm^-2"]/total_cost
         return self.pol_curve_data
 
-    # def plot_pol_curves(pol_curve_data, geom_area=True, Ir_loading=False, cost=False):
-    #     if geom_area:
-    #         pol_curve_data = normalize_current_to_geom_area(pol_curve_data)
+    def plot(self):
+        self.composite_chart = None
+        if self.geom_area_norm:
 
-    #         geom_area_norm_pol_curve = alt.Chart(pol_curve_data).mark_circle().encode(
-    #         alt.X('I/A cm^-2', axis=alt.Axis(title='Current density [A cm-2]')),
-    #         alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
-    #         )
+            geom_area_norm_pol_curve_chart = alt.Chart(self.pol_curve_data).mark_circle().encode(
+            alt.X('I/A cm^-2', axis=alt.Axis(title='Current density [A cm-2]')),
+            alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+            )
 
-    #     if Ir_loading:
-    #         pol_curve_data = normalize_current_to_Ir_loading(pol_curve_data, Ir_loading=0.1)
+            if self.composite_chart is None:
+                self.composite_chart = geom_area_norm_pol_curve_chart
+            else:
+                self.composite_chart = self.composite_chart | geom_area_norm_pol_curve_chart
 
-    #         Ir_loading_norm_pol_curve = alt.Chart(pol_curve_data).mark_circle().encode(
-    #         alt.X('I/A mg_Ir^-1', axis=alt.Axis(title='Current density [A mg_Ir^-1]')),
-    #         alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
-    #         )
+        if self.Ir_loading_norm:
 
-    #     if cost:
-    #         pol_curve_data = normalize_current_to_catalyst_cost(pol_curve_data)
+            Ir_loading_norm_pol_curve_chart = alt.Chart(self.pol_curve_data).mark_circle().encode(
+            alt.X('I/A mg_Ir^-1', axis=alt.Axis(title='Current density [A mg_Ir^-1]')),
+            alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+            )
+            self.composite_chart = self.composite_chart | Ir_loading_norm_pol_curve_chart
 
-    #         catalyst_cost_norm_pol_curve = alt.Chart(pol_curve_data).mark_circle().encode(
-    #         alt.X('I/A $PGM^-1', axis=alt.Axis(title='Current density [A $PGM^-1]')),
-    #         alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
-    #         )
+        if self.catalyst_cost_norm:
 
-    #     composite_chart = geom_area_norm_pol_curve | Ir_loading_norm_pol_curve
+            catalyst_cost_norm_pol_curve_chart = alt.Chart(self.pol_curve_data).mark_circle().encode(
+            alt.X('I/A $PGM^-1', axis=alt.Axis(title='Current density [A $PGM^-1]')),
+            alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+            )
+            self.composite_chart = self.composite_chart | catalyst_cost_norm_pol_curve_chart
     
-    #     composite_chart.save('pol_curves.html')
+        self.composite_chart.save('pol_curves.html')
 
         
