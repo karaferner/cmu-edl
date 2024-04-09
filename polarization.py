@@ -110,7 +110,7 @@ class Polarization:
         self.pol_curve_data["I/A $PGM^-1"] = self.pol_curve_data["I/A cm^-2"]/total_cost
         return self.pol_curve_data
 
-    def plot(self):
+    def plot_high_current(self):
         self.composite_chart = None
         if self.geom_area_norm:
 
@@ -140,6 +140,16 @@ class Polarization:
             )
             self.composite_chart = self.composite_chart | catalyst_cost_norm_pol_curve_chart
     
-        self.composite_chart.save('pol_curves.html')
+        self.composite_chart.save('high_current_pol_curves.html')
 
+    def plot_low_current(self, max_current=0.2 ):
+
+        low_current_data = self.pol_curve_data[self.pol_curve_data["I/A cm^-2"]<=max_current]
+
+        low_current_density_chart = alt.Chart(low_current_data).mark_circle().encode(
+            alt.X('I/A cm^-2', axis=alt.Axis(title='Current density [A cm-2]')),
+            alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,1.5]))
+            )
+        
+        low_current_density_chart.save('low_current_pol_curve.html')
         

@@ -4,6 +4,9 @@ import io
 import pandas as pd
 import altair as alt
 from polarization import Polarization
+from EIS import EIS
+from cyclic_voltammetry import CyclicVoltammetry
+
 
 class Experiment:
     def __init__(self, name, Ir_loading, Pt_loading, active_area):
@@ -12,6 +15,8 @@ class Experiment:
         self.Pt_loading = Pt_loading
         self.active_area = active_area
         self.polarization = Polarization(self)
+        self.EIS = EIS(self)
+        self.CV = CyclicVoltammetry(self)
     
     def print_details(self):
         print("Experiment Details:")
