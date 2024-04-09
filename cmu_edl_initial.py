@@ -126,7 +126,7 @@ def plot_pol_curves(pol_curve_data, geom_area=True, Ir_loading=False, cost=False
 
     composite_chart = geom_area_norm_pol_curve | Ir_loading_norm_pol_curve
   
-    composite_chart.save('chart.html')
+    composite_chart.save('pol_curves.html')
 
 
 if __name__ == "__main__":
