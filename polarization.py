@@ -3,7 +3,7 @@ import csv
 import io
 import pandas as pd
 import altair as alt
-from data_cleaning import clean_data_file
+from data_cleaning import read_and_clean_data
 
 class Polarization:
     def __init__(self,experiment):
@@ -13,10 +13,10 @@ class Polarization:
         self.experiment = experiment
     
     def add_high_current_data(self, data_file):
-        self.high_current_data = clean_data_file(data_file)
+        self.high_current_data = read_and_clean_data(data_file)
 
     def add_low_current_data(self, data_file):
-        self.low_current_data = pd.read_csv(data_file,sep='\s+')
+        self.low_current_data = read_and_clean_data(data_file)
 
     def get_high_current_data(self):
         return self.high_current_data
@@ -117,8 +117,8 @@ class Polarization:
 
             geom_area_norm_pol_curve_chart = alt.Chart(self.pol_curve_data).mark_circle().encode(
             alt.X('I/A cm^-2', axis=alt.Axis(title='Current density [A cm-2]')),
-            alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
-            )
+            alt.Y('Ewe/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+            ).interactive()
 
             if self.composite_chart is None:
                 self.composite_chart = geom_area_norm_pol_curve_chart
@@ -129,19 +129,19 @@ class Polarization:
 
             Ir_loading_norm_pol_curve_chart = alt.Chart(self.pol_curve_data).mark_circle().encode(
             alt.X('I/A mg_Ir^-1', axis=alt.Axis(title='Current density [A mg_Ir^-1]')),
-            alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
-            )
+            alt.Y('Ewe/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+            ).interactive()
             self.composite_chart = self.composite_chart | Ir_loading_norm_pol_curve_chart
 
         if self.catalyst_cost_norm:
 
-            catalyst_cost_norm_pol_curve_chart = alt.Chart(self.pol_curve_data).mark_circle().encode(
+            catalyst_cost_norm_pol_curve_chart = alt.Chart(self.pol_curve_data).mark_line().encode(
             alt.X('I/A $PGM^-1', axis=alt.Axis(title='Current density [A $PGM^-1]')),
-            alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
-            )
+            alt.Y('Ewe/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,2.4]))
+            ).interactive()
             self.composite_chart = self.composite_chart | catalyst_cost_norm_pol_curve_chart
     
-        self.composite_chart.save('high_current_pol_curves.html')
+        self.composite_chart.save('test_output/high_current_pol_curves.html')
 
     def plot_low_current(self, max_current=0.2 ):
 
@@ -149,8 +149,8 @@ class Polarization:
 
         low_current_density_chart = alt.Chart(low_current_data).mark_circle().encode(
             alt.X('I/A cm^-2', axis=alt.Axis(title='Current density [A cm-2]')),
-            alt.Y('<Ewe>/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,1.5]))
-            )
+            alt.Y('Ewe/V',axis=alt.Axis(title='Cell voltage [V]'),scale=alt.Scale(domain=[1.38,1.5]))
+            ).interactive()
         
-        low_current_density_chart.save('low_current_pol_curve.html')
+        low_current_density_chart.save('test_output/low_current_pol_curve.html')
         

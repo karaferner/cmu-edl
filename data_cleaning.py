@@ -10,13 +10,6 @@ def readCSVdata(filename):
     return dataframe
 
 
-# def writeCSV(data):
-#     with open('output.csv', 'w',newline='') as csvfile:
-#         csvwriter = csv.writer(csvfile)
-#         csvwriter.writerows(data)
-#     print('output.csv written')
-
-
 def check_for_missing_newline(dataframe):
     num_columns = len(dataframe.columns)
     for index, row in dataframe.iterrows():
@@ -59,23 +52,18 @@ def check_for_extra_commas(dataframe):
 
 def strip_column_names(dataframe):
     headers = dataframe.columns.values
-    print(headers)
     for i,name in enumerate(headers):
         clean_name = name.replace("<", "").replace(">", "")
         dataframe.columns.values[i] = clean_name
     return dataframe
 
 
-def clean_data_file(filename):
+def read_and_clean_data(filename):
     data = readCSVdata(filename)
     data = check_for_missing_newline(data)
     data = check_for_extra_commas(data)
     data = strip_column_names(data)
     return data
 
-if __name__ == "__main__":
-    filename = 'test_data/test_data_highIVcurve.txt'
-    data = readCSVdata(filename)
 
-    writeCSV(data)
     
