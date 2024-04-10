@@ -23,7 +23,7 @@ class Experiment:
         print("Experiment Name:", self.name)
         print("Ir Loading:", self.Ir_loading)
         print("Pt Loading:", self.Pt_loading)
-        print("Active Area:", self.active_area)
+        print("Active Area: {} cm^2".format(self.active_area))
 
     def set_Ir_loading(self, Ir_loading):
         self.Ir_loading = Ir_loading

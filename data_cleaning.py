@@ -31,7 +31,7 @@ def check_for_missing_newline(dataframe):
     print()
     return dataframe
 
-def check_for_extra_commas(dataframe):
+def check_for_extra_separator(dataframe):
     num_columns = len(dataframe.columns)
 
     rows_to_delete = []
@@ -41,7 +41,7 @@ def check_for_extra_commas(dataframe):
             assert len(row) == num_columns
         except AssertionError:
             if len(row) == num_columns+1:
-                print(f"AssertionError raised at row {index}, length of row: {len(row)}, extra comma")
+                print(f"AssertionError raised at row {index}, length of row: {len(row)}, extra separator")
                 rows_to_delete.append(index)
     
     for j in reversed(rows_to_delete):
@@ -61,7 +61,7 @@ def strip_column_names(dataframe):
 def read_and_clean_data(filename):
     data = readCSVdata(filename)
     data = check_for_missing_newline(data)
-    data = check_for_extra_commas(data)
+    data = check_for_extra_separator(data)
     data = strip_column_names(data)
     return data
 

@@ -1,6 +1,4 @@
 import numpy as np
-import csv
-import io
 import pandas as pd
 import altair as alt
 from data_cleaning import read_and_clean_data
