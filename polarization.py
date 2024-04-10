@@ -3,6 +3,7 @@ import csv
 import io
 import pandas as pd
 import altair as alt
+from data_cleaning import clean_data_file
 
 class Polarization:
     def __init__(self,experiment):
@@ -12,7 +13,7 @@ class Polarization:
         self.experiment = experiment
     
     def add_high_current_data(self, data_file):
-        self.high_current_data = pd.read_csv(data_file, sep="\s+")
+        self.high_current_data = clean_data_file(data_file)
 
     def add_low_current_data(self, data_file):
         self.low_current_data = pd.read_csv(data_file,sep='\s+')
