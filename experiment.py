@@ -6,6 +6,7 @@ import altair as alt
 from polarization import Polarization
 from EIS import EIS
 from cyclic_voltammetry import CyclicVoltammetry
+from durability import Durability
 
 
 class Experiment:
@@ -17,6 +18,7 @@ class Experiment:
         self.polarization = Polarization(self)
         self.EIS = EIS(self)
         self.CV = CyclicVoltammetry(self)
+        self.durability = Durability(self)
     
     def print_details(self):
         print("Experiment Details:")

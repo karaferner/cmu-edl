@@ -28,7 +28,6 @@ def check_for_missing_newline(dataframe):
                         dataframe[index] = replace_current_row
                         dataframe.insert(index+1,second_row)
 
-    print()
     return dataframe
 
 def check_for_extra_separator(dataframe):
@@ -47,7 +46,6 @@ def check_for_extra_separator(dataframe):
     for j in reversed(rows_to_delete):
         del dataframe[j]
 
-    print()
     return dataframe
 
 def strip_column_names(dataframe):
