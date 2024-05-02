@@ -6,7 +6,7 @@ import re
 import pandas as pd
 
 def readCSVdata(filename):
-    dataframe = pd.read_csv(filename,sep='\s+')
+    dataframe = pd.read_csv(filename,sep='\t(?!\t$)', engine='python')
     return dataframe
 
 

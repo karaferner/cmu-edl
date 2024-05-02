@@ -11,13 +11,12 @@ class CyclicVoltammetry:
 
     def add_CV_data(self, CV_data_file):
         self.CV_data = read_and_clean_data(CV_data_file)
-        self.CV_data = self.CV_data.drop(columns='number')
 
     def get_CV_data(self):
         return self.CV_data
     
     def select_cycle(self, cycle_number=10):
-        self.CV_data = self.CV_data[self.CV_data['cycle'] == cycle_number]
+        self.CV_data = self.CV_data[self.CV_data['cycle number'] == cycle_number]
         return self.CV_data
     
     def plot_CV(self):
