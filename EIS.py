@@ -12,8 +12,8 @@ class EIS:
 
         self.experiment = experiment
 
-    def add_EIS_data(self, data_file):
-        self.EIS_data = read_and_clean_data(data_file)
+    def add_EIS_data(self, EIS_data_file):
+        self.EIS_data = read_and_clean_data(EIS_data_file)
         self.real_impedance = self.EIS_data.loc[:,"Re(Z)/Ohm"]
         self.imaginary_impedance = self.EIS_data.loc[:,"-Im(Z)/Ohm"]
 
@@ -21,9 +21,9 @@ class EIS:
         return self.EIS_data
     
     def get_HFR(self):      
-        for i, im in enumerate(self.imaginary_impedance):
-            if im<0 and self.imaginary_impedance[i+1]>0:
-                self.HFR = (self.real_impedance[i+1]+self.real_impedance[i])/2
+        for index, imaginary_impedance_value in enumerate(self.imaginary_impedance):
+            if imaginary_impedance_value<0 and self.imaginary_impedance[index+1]>0:
+                self.HFR = (self.real_impedance[index+1]+self.real_impedance[index])/2
                 self.HFR *= self.experiment.active_area
                 break
         return self.HFR

@@ -9,10 +9,10 @@ from cyclic_voltammetry import CyclicVoltammetry
 
 
 class Experiment:
-    def __init__(self, name, Ir_loading=None, Pt_loading=None, active_area=None):
+    def __init__(self, name, iridium_loading=None, platinum_loading=None, active_area=None):
         self.name = name
-        self.Ir_loading = Ir_loading
-        self.Pt_loading = Pt_loading
+        self.iridium_loading = iridium_loading
+        self.platinum_loading = platinum_loading
         self.active_area = active_area
         self.polarization = Polarization(self)
         self.EIS = EIS(self)
@@ -21,21 +21,21 @@ class Experiment:
     def print_details(self):
         print("Experiment Details:")
         print("Experiment Name:", self.name)
-        print("Ir Loading:", self.Ir_loading)
-        print("Pt Loading:", self.Pt_loading)
+        print("Ir Loading:", self.iridium_loading)
+        print("Pt Loading:", self.platinum_loading)
         print("Active Area: {} cm^2".format(self.active_area))
 
-    def set_Ir_loading(self, Ir_loading):
-        self.Ir_loading = Ir_loading
+    def set_Ir_loading(self, iridium_loading):
+        self.iridium_loading = iridium_loading
 
     def get_Ir_loading(self):
-        return self.Ir_loading
+        return self.iridium_loading
 
-    def set_Pt_loading(self, Pt_loading):
-        self.Pt_loading = Pt_loading
+    def set_Pt_loading(self, platinum_loading):
+        self.platinum_loading = platinum_loading
 
     def get_Pt_loading(self):
-        return self.Pt_loading
+        return self.platinum_loading
 
     def set_active_area(self, active_area):
         self.active_area = active_area

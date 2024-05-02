@@ -10,11 +10,11 @@ class Polarization:
 
         self.experiment = experiment
     
-    def add_high_current_data(self, data_file):
-        self.high_current_data = read_and_clean_data(data_file)
+    def add_high_current_data(self, high_current_data_file):
+        self.high_current_data = read_and_clean_data(high_current_data_file)
 
-    def add_low_current_data(self, data_file):
-        self.low_current_data = read_and_clean_data(data_file)
+    def add_low_current_data(self, low_current_data_file):
+        self.low_current_data = read_and_clean_data(low_current_data_file)
 
     def get_high_current_data(self):
         return self.high_current_data
@@ -22,7 +22,7 @@ class Polarization:
     def get_low_current_data(self):
         return self.low_current_data
 
-    def average_data_on_Ns(df=pd.DataFrame, num_rows=10):
+    def average_data_on_Ns(pol_curve_raw_data=pd.DataFrame, num_rows_to_average=10):
         """
         Calculates the average of the last rows of data for each value "Ns".
 
@@ -34,16 +34,16 @@ class Polarization:
             df_avg: A DataFrame containing the averaged data
         """
 
-        df_avg = pd.DataFrame(columns=df.columns)
-        grouped = df.groupby("Ns")
+        pol_curve_averaged_data = pd.DataFrame(columns=pol_curve_raw_data.columns)
+        pol_curve_Ns_grouped = pol_curve_raw_data.groupby("Ns")
 
-        for name, group in grouped:
-            sorted_group = group.sort_index(ascending=True)
-            last_ten = sorted_group.tail(num_rows)
-            for col in df.columns:
-                df_avg.loc[name,col] = last_ten[col].mean()
+        for colum_name, Ns_group in pol_curve_Ns_grouped:
+            sorted_group = Ns_group.sort_index(ascending=True)
+            last_ten = sorted_group.tail(num_rows_to_average)
+            for col in pol_curve_raw_data.columns:
+                pol_curve_averaged_data.loc[colum_name,col] = last_ten[col].mean()
 
-        return df_avg
+        return pol_curve_averaged_data
 
 
     def get_pol_curve_data(self, convert_to_Amps=True):
@@ -95,17 +95,17 @@ class Polarization:
     def normalize_current_to_Ir_loading(self):
         self.Ir_loading_norm = True
 
-        self.pol_curve_data["I/A mg_Ir^-1"] = self.pol_curve_data["I/A cm^-2"]/self.experiment.Ir_loading
+        self.pol_curve_data["I/A mg_Ir^-1"] = self.pol_curve_data["I/A cm^-2"]/self.experiment.iridium_loading
         return self.pol_curve_data
 
-    def normalize_current_to_catalyst_cost(self, Ir_price=5000, Pt_price=1000):
+    def normalize_current_to_catalyst_cost(self, iridium_price=5000, platinum_price=1000):
         self.catalyst_cost_norm = True
-        Ir_price = Ir_price/  28349.523125 #$/oz / mg/oz = $/mg
-        Pt_price = Pt_price / 28349.523125 #$/oz / mg/oz = $/mg
+        iridium_price = iridium_price/  28349.523125 #$/oz / mg/oz = $/mg
+        platinum_price = platinum_price / 28349.523125 #$/oz / mg/oz = $/mg
 
-        Ir_part = self.experiment.Ir_loading*Ir_price
-        Pt_part = self.experiment.Pt_loading*Pt_price
-        total_cost = Ir_part+Pt_part #total $/cm^2
+        cost_of_iridium_content = self.experiment.iridium_loading*iridium_price
+        cost_of_platinum_content = self.experiment.iridium_loading*platinum_price
+        total_cost = cost_of_iridium_content+cost_of_platinum_content #total $/cm^2
         self.pol_curve_data["I/A $PGM^-1"] = self.pol_curve_data["I/A cm^-2"]/total_cost
         return self.pol_curve_data
 
