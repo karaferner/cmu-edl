@@ -50,3 +50,12 @@ def average_data_on_cycle_number(data_to_average=pd.DataFrame, num_rows_to_avera
 
     return averaged_data
     
+def shift_indices(df, number_to_shift):
+    df.index = df.index + number_to_shift
+    return df
+
+def skip_row_index(df, row_to_skip):
+    new_index = df.index.to_series()
+    new_index.loc[row_to_skip:] += 1
+    df.index = new_index
+    return df
