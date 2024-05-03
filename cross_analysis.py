@@ -15,6 +15,26 @@ def tafel(x,b,i0):
 #     print(f"Approximate i value at E_ir-free={target} V: {x_approx}")
 #     return x_approx
 
+def calc_HFR(df):
+    real = np.array(df['Re(Z)/Ohm'])
+    im = np.array(df['-Im(Z)/Ohm'])
+    
+    for j in range(len(im)):
+        if im[j]<0 and im[j+1]>0:
+            HFR = ((real[j+1]+real[j])/2)
+            break
+            
+    return HFR
+
+def get_HFR_array(df):
+    grouped = df.groupby("cycle number")
+    HFR_list_for_given_df = []
+    for cycle_num, group in grouped:
+        HFR = calc_HFR(group)
+        HFR_list_for_given_df.append(HFR)
+            
+    return np.array(HFR_list_for_given_df)
+
 
 def calc_HFR_free(df):
     average_HFR = np.average(df['HFR'])

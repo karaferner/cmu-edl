@@ -62,3 +62,19 @@ class Durability:
 
         self.per_hour_current_hold = current_hold_df
         self.per_hour_GEIS = GEIS_df
+
+
+    def getPolCurve_SGEIS(filenames):
+        dfs_list = []
+        for file in filenames:
+            df = pd.read_csv(file, sep=r"\t", engine='python')
+            df = df[df['freq/Hz']== 0]
+            df = df.drop(columns=['freq/Hz','Re(Z)/Ohm','-Im(Z)/Ohm'])
+            df = average_data_on_cycle_number(df)
+            dfs_list.append(df)
+            
+        combined_df = combine_dataframes(dfs_list)
+        time_sorted_df = sort_dataframe_by_time(combined_df)
+        df_reset = time_sorted_df.reset_index(drop=True)
+        
+        return df_reset
