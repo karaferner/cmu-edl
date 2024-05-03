@@ -20,13 +20,16 @@ class EIS:
     def get_EIS_data(self):
         return self.EIS_data
     
-    def get_HFR(self):      
-        for index, imaginary_impedance_value in enumerate(self.imaginary_impedance):
-            if imaginary_impedance_value<0 and self.imaginary_impedance[index+1]>0:
-                self.HFR = (self.real_impedance[index+1]+self.real_impedance[index])/2
-                self.HFR *= self.experiment.active_area
+    def calc_HFR(self):
+        real = np.array(self.EIS_data['Re(Z)/Ohm'])
+        im = np.array(self.EIS_data['-Im(Z)/Ohm'])
+        
+        for j in range(len(im)):
+            if im[j]<0 and im[j+1]>0:
+                HFR = ((real[j+1]+real[j])/2)
                 break
-        return self.HFR
+                
+        return HFR
     
     def plot_Nyquist(self):
 

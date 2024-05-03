@@ -6,7 +6,7 @@ import re
 import pandas as pd
 
 def read_txt_file(filename):
-    dataframe = pd.read_csv(filename,sep=r'\t', engine='python')
+    dataframe = pd.read_csv(filename,sep=r'\t(?!\t$)', engine='python')
     return dataframe
 
 
