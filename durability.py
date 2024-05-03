@@ -53,6 +53,7 @@ class Durability:
                 
         current_hold_df = combine_dataframes(current_hold_list)
         current_hold_df = sort_dataframe_by_time(current_hold_df)
+        current_hold_df = convert_abs_time_to_total_seconds(current_hold_df)
         current_hold_df = current_hold_df.reset_index(drop=True)
         
         GEIS_df = combine_dataframes(GEIS_list)

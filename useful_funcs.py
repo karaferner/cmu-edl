@@ -8,14 +8,17 @@ import os
 
 def get_filenames(directory):
     filenames = []
-    for entry in os.listdir(directory):
-        full_path = os.path.join(directory, entry)
+    for item in os.listdir(directory):
+        full_path = os.path.abspath(os.path.join(directory, item))
         if os.path.isfile(full_path) and full_path.endswith(".txt"):
             filenames.append(full_path)
         elif os.path.isdir(full_path):
-            filenames.extend(get_filenames(full_path))
+            filenames.append(get_filenames(full_path))
     return filenames
 
+def sort_dataframe_by_time(df):
+    df_sorted = df.sort_values(by="time/s")
+    return df_sorted
 
 def convert_abs_time_to_total_seconds(df):
     df['seconds'] = pd.to_datetime(df['time/s'])
@@ -30,9 +33,10 @@ def combine_dataframes(dfs_list):
     combined_df = pd.concat(dfs_list)
     return combined_df
 
-def sort_dataframe_by_time(df):
-    df_sorted = df.sort_values(by="time/s")
-    return df_sorted
+def shift_indices(df, number_to_shift):
+    df.index = df.index + number_to_shift
+    return df
+
 
 def average_data_on_cycle_number(data_to_average=pd.DataFrame, num_rows_to_average=10):
     averaged_data = pd.DataFrame(columns=data_to_average.columns)
@@ -50,12 +54,5 @@ def average_data_on_cycle_number(data_to_average=pd.DataFrame, num_rows_to_avera
 
     return averaged_data
     
-def shift_indices(df, number_to_shift):
-    df.index = df.index + number_to_shift
-    return df
 
-def skip_row_index(df, row_to_skip):
-    new_index = df.index.to_series()
-    new_index.loc[row_to_skip:] += 1
-    df.index = new_index
-    return df
+

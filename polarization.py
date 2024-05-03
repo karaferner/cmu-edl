@@ -7,7 +7,6 @@ class Polarization:
     def __init__(self,experiment):
         self.high_current_data = None
         self.low_current_data = None
-
         self.experiment = experiment
     
     def add_high_current_data(self, high_current_data_file):
@@ -24,24 +23,26 @@ class Polarization:
 
     def average_data_on_Ns(pol_curve_raw_data=pd.DataFrame, num_rows_to_average=10):
         """
-        Calculates the average of the last rows of data for each value "Ns".
+        Calculates the average of the last rows of data for each value "Ns" and returns 
+        a new dataframe containing the averaged data points. This is the field-standard way 
+        of parsing and presenting polarization curve data. 
 
         Parameters:
-            df (pd.DataFrame): A DataFrame containing the data.
+            pol_curve_raw_data (pd.DataFrame): A DataFrame containing the raw polarization data.
             num_rows (int): The number of rows (data points) to average for each "Ns." Default value is 10. 
 
         Returns:
-            df_avg: A DataFrame containing the averaged data
+            pol_curve_averaged_data: A DataFrame containing the averaged data
         """
 
         pol_curve_averaged_data = pd.DataFrame(columns=pol_curve_raw_data.columns)
         pol_curve_Ns_grouped = pol_curve_raw_data.groupby("Ns")
 
-        for colum_name, Ns_group in pol_curve_Ns_grouped:
+        for Ns_number, Ns_group in pol_curve_Ns_grouped:
             sorted_group = Ns_group.sort_index(ascending=True)
-            last_ten = sorted_group.tail(num_rows_to_average)
+            values_to_average = sorted_group.tail(num_rows_to_average)
             for col in pol_curve_raw_data.columns:
-                pol_curve_averaged_data.loc[colum_name,col] = last_ten[col].mean()
+                pol_curve_averaged_data.loc[Ns_number,col] = values_to_average[col].mean()
 
         return pol_curve_averaged_data
 

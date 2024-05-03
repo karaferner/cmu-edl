@@ -5,8 +5,8 @@ import os
 import re
 import pandas as pd
 
-def readCSVdata(filename):
-    dataframe = pd.read_csv(filename,sep='\t(?!\t$)', engine='python')
+def read_txt_file(filename):
+    dataframe = pd.read_csv(filename,sep=r'\t', engine='python')
     return dataframe
 
 
@@ -57,7 +57,7 @@ def strip_column_names(dataframe):
 
 
 def read_and_clean_data(filename):
-    data = readCSVdata(filename)
+    data = read_txt_file(filename)
     data = check_for_missing_newline(data)
     data = check_for_extra_separator(data)
     data = strip_column_names(data)

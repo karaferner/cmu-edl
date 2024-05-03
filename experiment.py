@@ -10,7 +10,8 @@ from durability import Durability
 
 
 class Experiment:
-    def __init__(self, name, iridium_loading=None, platinum_loading=None, active_area=None):
+    def __init__(self, name, iridium_loading=None, 
+                 platinum_loading=None, active_area=None):
         self.name = name
         self.iridium_loading = iridium_loading
         self.platinum_loading = platinum_loading
@@ -20,8 +21,8 @@ class Experiment:
         self.CV = CyclicVoltammetry(self)
         self.durability = Durability(self)
     
-    def print_details(self):
-        print("Experiment Details:")
+    def print_attributes(self):
+        print("Experiment Attributes:")
         print("Experiment Name:", self.name)
         print("Ir Loading:", self.iridium_loading)
         print("Pt Loading:", self.platinum_loading)
